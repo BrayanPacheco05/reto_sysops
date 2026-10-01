@@ -1,9 +1,10 @@
 import sys
+
 from awsglue.context import GlueContext
 from awsglue.job import Job
+from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from pyspark.sql.functions import col, to_timestamp
-from awsglue.utils import getResolvedOptions
 
 
 args = getResolvedOptions(
@@ -18,12 +19,15 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
 
-
 source_path = args["SOURCE_PATH"]
 target_path = args["TARGET_PATH"]
 
 
+print(f"Reading Bronze data from: {source_path}")
+
 df = spark.read.json(source_path)
+
+print(f"Bronze records read: {df.count()}")
 
 
 df = (
@@ -46,24 +50,32 @@ df = (
         "amount",
         col("amount").cast("double")
     )
-    .dropDuplicates(["event_id"])
     .dropna(
         subset=[
             "event_id",
             "timestamp",
             "user_id",
             "transaction_id",
-            "amount"
+            "amount",
+            "status"
         ]
     )
+    .dropDuplicates(["event_id"])
 )
 
 
-df.write \
-    .mode("append") \
-    .format("parquet") \
-    .partitionBy("status") \
-    .save(target_path)
+print(f"Valid unique records: {df.count()}")
 
+
+(
+    df.write
+    .mode("overwrite")
+    .format("parquet")
+    .partitionBy("status")
+    .save(target_path)
+)
+
+
+print(f"Silver data written to: {target_path}")
 
 job.commit()

@@ -93,6 +93,7 @@ GET /health
 GET /transactions
 GET /transactions/summary
 ```
+En esta implementación se decidió mantener el Dockerfile dentro de api/, ya que el Dockerfile pertenece directamente al microservicio FastAPI
 
 Ejemplo:
 

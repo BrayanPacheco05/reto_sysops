@@ -124,9 +124,11 @@ def transactions(limit: int = 10):
         LIMIT {limit}
     """
 
+    results = execute_query(query)
+
     return {
-        "count": limit,
-        "data": execute_query(query)
+        "count": len(results),
+        "data": results
     }
 @app.get("/transactions/summary")
 def transactions_summary():

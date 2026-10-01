@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Python test/cache
+.pytest_cache/
+
+# AWS / local files
+.aws/
